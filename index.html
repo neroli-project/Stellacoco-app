@@ -1,0 +1,990 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>星のしずく - 不登校・子育て専門 占星術サポート</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      font-family: 'Zen Maru Gothic', sans-serif;
+      background: linear-gradient(135deg, #f5f3ff 0%, #f0f9ff 100%);
+      color: #334155;
+    }
+    .card-shadow {
+      box-shadow: 0 10px 25px -5px rgba(148, 163, 184, 0.15), 0 8px 10px -6px rgba(148, 163, 184, 0.1);
+    }
+    @media print {
+      .no-print { display: none !important; }
+      .print-only { display: block !important; }
+      body { background: white; color: black; }
+      .card-shadow { box-shadow: none; border: 1px solid #e2e8f0; }
+    }
+  </style>
+</head>
+<body class="min-h-screen py-8 px-4 sm:px-6 lg:px-8">
+
+  <div class="max-w-4xl mx-auto">
+    <!-- ヘッダー -->
+    <header class="text-center mb-8 no-print">
+      <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-indigo-100 text-indigo-600 mb-3 shadow-inner">
+        <span class="text-2xl">✨</span>
+      </div>
+      <h1 class="text-2xl sm:text-3xl font-bold text-indigo-900 tracking-wide">星のしずく 占いサポート</h1>
+      <p class="text-xs sm:text-sm text-indigo-600 mt-2 font-medium">不登校・繊細なお子さんの特性と潜在才能をひもとく占星術カルテ</p>
+    </header>
+
+    <!-- 入力フォーム -->
+    <div class="bg-white rounded-3xl p-6 sm:p-8 card-shadow mb-8 no-print border border-indigo-50">
+      <h2 class="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2 border-b pb-3 border-slate-100">
+        <i class="fa-solid fa-child-reaching text-indigo-500"></i> お子様の生年月日・出生情報
+      </h2>
+
+      <form id="astrologyForm" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div>
+          <label class="block text-xs font-bold text-slate-600 mb-1">お名前・ニックネーム</label>
+          <input type="text" id="childName" placeholder="例：Aちゃん" value="お子様" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-400 text-sm">
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-600 mb-1">生年月日 <span class="text-rose-500">*</span></label>
+          <input type="date" id="birthDate" required value="1976-03-11" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-400 text-sm">
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-600 mb-1">出生時間（日本時間 UTC+9）</label>
+          <input type="time" id="birthTime" value="00:50" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-400 text-sm">
+        </div>
+
+        <div class="md:col-span-3 mt-2">
+          <button type="submit" class="w-full py-3.5 bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white font-bold rounded-2xl shadow-lg shadow-indigo-200 transition duration-200 flex items-center justify-center gap-2">
+            <i class="fa-solid fa-wand-magic-sparkles"></i> 鑑定カルテを作成する
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- 結果表示エリア -->
+    <div id="resultArea" class="hidden space-y-8">
+      
+      <!-- 鑑定者向けヘッダー & 操作ボタン -->
+      <div class="flex flex-col sm:flex-row justify-between items-center gap-4 bg-indigo-900 text-white p-5 rounded-2xl no-print shadow-lg">
+        <div>
+          <h3 class="font-bold text-lg" id="summaryTitle">鑑定結果カルテ</h3>
+          <p class="text-xs text-indigo-200">※占いの相談対応・鑑定書の作成用にご活用いただけます。</p>
+        </div>
+        <div class="flex gap-2">
+          <button onclick="window.print()" class="px-4 py-2 bg-white/10 hover:bg-white/20 rounded-xl text-xs font-bold transition flex items-center gap-1.5 border border-white/20">
+            <i class="fa-solid fa-print"></i> 印刷/PDF保存
+          </button>
+          <button onclick="copySummaryText()" class="px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow">
+            <i class="fa-solid fa-copy"></i> テキストコピー
+          </button>
+        </div>
+      </div>
+
+      <!-- ① エレメント分析 (4つの元素) -->
+      <div class="bg-white rounded-3xl p-6 sm:p-8 card-shadow border border-slate-100">
+        <h3 class="text-lg font-bold text-indigo-950 mb-4 flex items-center gap-2 border-b pb-3">
+          <span class="w-3 h-3 rounded-full bg-indigo-500 inline-block"></span> ① ４元素（エレメント）バランス分析
+        </h3>
+        
+        <!-- エレメントバー表示 -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6" id="elementCards"></div>
+
+        <div class="space-y-4 text-sm" id="elementDetailDiagnosis"></div>
+      </div>
+
+      <!-- ② 7惑星の基本性質（不登校・生きづらさ視点） -->
+      <div class="bg-white rounded-3xl p-6 sm:p-8 card-shadow border border-slate-100">
+        <h3 class="text-lg font-bold text-indigo-950 mb-4 flex items-center gap-2 border-b pb-3">
+          <span class="w-3 h-3 rounded-full bg-indigo-500 inline-block"></span> ② 主要7天体が教える「お子様の心と行動の傾向」
+        </h3>
+        <p class="text-xs text-slate-500 mb-4">学校という環境で起こりやすい反応や、エネルギーの使い方を分析します。</p>
+        
+        <div class="grid grid-cols-1 gap-4" id="planetsDetail"></div>
+      </div>
+
+      <!-- ③ アスペクト解説（つまづきの原因・葛藤のポイント） -->
+    <div class="bg-white rounded-3xl p-6 sm:p-8 card-shadow border border-slate-100">
+      <h3 class="text-lg font-bold text-indigo-950 mb-1 flex items-center gap-2 border-b pb-3">
+        <span class="w-3 h-3 rounded-full bg-indigo-500 inline-block"></span> ③ つまづきの原因と葛藤を探る（ハードアスペクト詳細解析）
+      </h3>
+      <p class="text-xs text-slate-500 mb-4">天王星・海王星・冥王星を含む主要天体のハードアスペクト（0° / 90° / 180°）から、「葛藤」「SOSのサイン」「親ができる対策」を読み解きます。</p>
+      
+      <div class="space-y-4" id="aspectsDetail"></div>
+    </div>
+
+      <!-- ④ 隠れた才能発掘（太陽・金星・木星） -->
+      <div class="bg-gradient-to-br from-amber-50 to-orange-50 rounded-3xl p-6 sm:p-8 card-shadow border border-amber-200">
+        <h3 class="text-lg font-bold text-amber-950 mb-3 flex items-center gap-2 border-b border-amber-200/60 pb-3">
+          <i class="fa-solid fa-star text-amber-500"></i> ④ 隠れた才能発掘・未来への処方箋（太陽・水星・金星・火星・木星）
+        </h3>
+        <p class="text-xs text-amber-800 mb-4">それぞれの星が持つ性質を活かした「具体的なお守り・趣味・勉強法・発散方法・開運アクション」です。</p>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="talentsDetail"></div>
+      </div>
+
+      <!-- ⑤ 声掛けと不足元素の補完ケア -->
+      <div class="bg-white rounded-3xl p-6 sm:p-8 card-shadow border border-slate-100">
+        <h3 class="text-lg font-bold text-indigo-950 mb-4 flex items-center gap-2 border-b pb-3">
+          <span class="w-3 h-3 rounded-full bg-indigo-500 inline-block"></span> ⑤ 心をほぐす声掛け＆アロマ・セルフケア
+        </h3>
+
+        <div class="space-y-6" id="careDetail"></div>
+      </div>
+
+      <!-- ⑥ 鑑定サマリー出力 -->
+      <div class="bg-slate-900 text-slate-100 rounded-3xl p-6 sm:p-8 card-shadow">
+        <div class="flex justify-between items-center mb-4 border-b border-slate-700 pb-3">
+          <h3 class="text-lg font-bold text-amber-300 flex items-center gap-2">
+            <i class="fa-solid fa-file-contract"></i> ⑥ 鑑定用メッセージ・送送信サマリー
+          </h3>
+          <button onclick="copySummaryText()" class="px-3 py-1 bg-amber-400 hover:bg-amber-300 text-slate-900 text-xs font-bold rounded-lg transition">
+            コピーする
+          </button>
+        </div>
+        <p class="text-xs text-slate-400 mb-3">保護者の方へのメッセージやメール・LINE等にそのまま活用できる要約文です。</p>
+        <textarea id="summaryTextarea" readonly class="w-full h-64 p-4 rounded-xl bg-slate-950 text-slate-200 text-xs leading-relaxed border border-slate-800 font-mono focus:outline-none resize-none"></textarea>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    // エレメント解説データ
+    const ELEMENT_EXP = {
+      "火": {
+        title: "【火】情熱・行動・主張",
+        color: "bg-amber-500",
+        lightBg: "bg-amber-50",
+        borderColor: "border-amber-200",
+        textColor: "text-amber-800",
+        lack: "自分から「やりたい！」と言えない、やり返す気力が湧かない。エネルギーの点火に時間がかかる。",
+        excess: "感情が爆発しやすい、不満が行動（反発など）に出やすい。",
+        careMsg: "小さな選択肢（『AとBどっちがいい？』など）から自分で決める体験を増やし、自己決定感を取り戻します。",
+        aroma: "ローズマリー、スイートオレンジ、ショウガ（エネルギーを温め高める）"
+      },
+      "地": {
+        title: "【地】現実・体調・ルーティン",
+        color: "bg-emerald-500",
+        lightBg: "bg-emerald-50",
+        borderColor: "border-emerald-200",
+        textColor: "text-emerald-800",
+        lack: "朝起きられない、体調を崩しやすい、グラウンディング（地に足をつけること）が苦手。学校の「時間割」「規則」という枠組み自体がすごく負担。",
+        excess: "変化に対応するのが怖く、一度止まると再始動に時間がかかる。",
+        careMsg: "足湯やマッサージで身体感覚を育み、生活リズムを無理なくゆるやかに整えましょう。",
+        aroma: "ベチバー、パチュリ、フランキンセンス（地に足をつける深みのある香り）"
+      },
+      "風": {
+        title: "【風】言語・情報・客観性",
+        color: "bg-sky-500",
+        lightBg: "bg-sky-50",
+        borderColor: "border-sky-200",
+        textColor: "text-sky-800",
+        lack: "自分の気持ちを言葉にして伝えるのが苦手（「なんで学校行きたくないの？」と聞かれても理由を言えずフリーズする）。",
+        excess: "頭の中で色々考えすぎて脳がオーバーヒート。集団の噂話や空気に酔ってしまう。",
+        careMsg: "「言葉にできなくても大丈夫」と寄り添い、絵や音楽、選択肢カードなどで伝えるアプローチが効果的です。",
+        aroma: "ペパーミント、ユーカリ、レモン（思考をスッキリ整理する香り）"
+      },
+      "水": {
+        title: "【水】共感・感情・境界線",
+        color: "bg-indigo-500",
+        lightBg: "bg-indigo-50",
+        borderColor: "border-indigo-200",
+        textColor: "text-indigo-800",
+        lack: "周りの心配や親の感情に気づきにくく、一人で黙々と自分の世界に入り込む。",
+        excess: "人の感情や教室のピリピリ感をスポンジみたいに吸い取ってしまい、登校するだけで心がドッと疲弊する。",
+        careMsg: "静かで安心できる一人だけの空間（心のシェルター）を作り、他人の感情の境界線を意識できるようサポートします。",
+        aroma: "ラベンダー、カモミール・ローマン、ゼラニウム（心を優しく包み守る香り）"
+      }
+    };
+
+    // ハードアスペクト詳細解析DB（条件：天体A + 天体B + ハードアスペクト）
+    const HARD_ASPECT_DB = [
+      {
+        pair: ["木星", "土星"],
+        title: "自己矛盾・期待とプレッシャーの板挟み",
+        conflict: "「頑張りたい・期待に応えたい」という木星の意欲と、「失敗が怖い・ルールが重い」という土星のブレーキが激しく衝突。「やりたいのに動けない」という強い罪悪感と葛藤を抱えます。",
+        sign: "口では「明日は学校行く！」と言うのに当日の朝動けなくなる、自分を強く責めて「ごめんなさい」を繰り返す。",
+        action: "「行きたい気持ちだけで100点だよ」「動けなくても全く悪くない」と伝え、期待とプレッシャーの重荷を完全に降ろしてあげましょう。"
+      },
+      {
+        pair: ["木星", "月"],
+        title: "感情の過剰拡大・共感疲れ",
+        conflict: "安心を求める「月」と拡大の「木星」。周りの期待や相手の感情を過剰に受け止め広げてしまい、自分のキャパシティを超えて気疲れしてしまいます。",
+        sign: "いい子を演じすぎて家でどっと倒れる、家族の前で急に涙を流す、頼まれると断れない。",
+        action: "「NOと言っても大丈夫」「誰の期待にも応えなくていいよ」と伝え、受け止める範囲を小さくしてあげるサポートが有効です。"
+      },
+      {
+        pair: ["木星", "水星"],
+        title: "思考の拡散・脳のキャパオーバー",
+        conflict: "思考の「水星」と拡大の「木星」。頭の中でやりたいことや考え、不安が同時に溢れ出し、整理がつかなくなってフリーズします。",
+        sign: "早口で喋り続けたと思ったら突然だまり込む、宿題や課題の順番が決められず手が止まる。",
+        action: "「今やることは１つだけでいいよ」と選択肢を絞り、頭の中を紙に書いて整理してあげましょう。"
+      },
+      {
+        pair: ["木星", "火星"],
+        title: "エネルギーの急激な消耗・燃え尽き",
+        conflict: "行動力の「火星」と拡大の「木星」。一気にエネルギーを使いすぎてしまい、「やるときはやるが、直後に燃え尽きて長期間動けなくなる」という極端な波が生じます。",
+        sign: "行事やテストの直後、数日間まったく起き上がれなくなる、急にやる気を出したと思ったらすぐダウンする。",
+        action: "元気な時でも「7割くらいの力で抑えておこうね」とブレーキ役になり、省エネでの過ごし方を教えます。"
+      },
+      {
+        pair: ["木星", "天王星"],
+        title: "理想の肥大化・環境への強い反発",
+        conflict: "自由を求める「天王星」と拡大の「木星」。自分の理想やこだわりが急速に広がり、学校の枠組みや古いルールに対して「ここには自分の居場所はない」と強く感じます。",
+        sign: "学校のシステムを強く批判する、自分の好きなマニアックな世界に極端に没頭する。",
+        action: "学校以外の広い世界（フリースクールやオンライン、専門分野のコミュニティ）の選択肢を見せてあげましょう。"
+      },
+      {
+        pair: ["木星", "海王星"],
+        title: "現実感の希薄化・境界線の消失",
+        conflict: "イメージの「海王星」と拡大の「木星」。夢や不安、空想が際限なく広がり、現実的な学校生活の感覚や時間感覚が掴みにくくなります。",
+        sign: "時間感覚がなくなる、昼夜逆転が長期化する、ゲームやアニメの空想世界から戻りにくくなる。",
+        action: "頭ごなしに否定せず、五感に触れる体験（美味しいご飯、お風呂、散歩など）で少しずつ現実の感覚に引き戻しましょう。"
+      },
+      {
+        pair: ["木星", "冥王星"],
+        title: "極端な完璧主義・一か八かの思考",
+        conflict: "極限の「冥王星」と拡大の「木星」。極端なエネルギーが倍増し、「100点満点じゃないならゼロ（行かない）」「完璧にできないなら全部やめる」という極端な選択を取りやすくなります。",
+        sign: "「もう全部無理」「人生終わりだ」などの極端な発言、少しの失敗で全てを投げ出してしまう。",
+        action: "「10点でも、1点でも素晴らしいんだよ」と中間（グレーゾーン）の価値観を優しく伝え続けましょう。"
+      },
+      {
+        pair: ["月", "冥王星"],
+        title: "極限の感情抱え込み・エネルギー消耗",
+        conflict: "安心を司る「月」と破壊と再生の「冥王星」のプレッシャー。学校での不安や恐怖を完璧に隠そうとし、限界を超えて倒れるまで我慢してしまう。",
+        sign: "言葉が減る、部屋に引きこもり家族とも話さなくなる、急な腹痛・頭痛などの身体症状。",
+        action: "「学校に行かなくていい」という強い安心感の担保。感情を吐き出せるまでじっくり待つ姿勢。"
+      },
+      {
+        pair: ["月", "天王星"],
+        title: "集団生活への強い違和感・突然の途切れ",
+        conflict: "日常の安定を求める「月」と変化・自由を求める「天王星」の葛藤。集団の同調圧力や「みんなと同じ」に耐えられず、ある日突然糸が切れる。",
+        sign: "突然「もう学校行かない」と宣言する、ネットや趣味の世界に没頭する、他人に無関心になる。",
+        action: "個性を認め、学校以外の選択肢（フリースクールやオンライン学習）を提示して圧迫感をなくす。"
+      },
+      {
+        pair: ["月", "海王星"],
+        title: "感情の境界線消失・環境刺激への過敏",
+        conflict: "心を守りたい「月」と境界線を溶かす「海王星」の影響。友達や先生のイライラ・悲しみを自分のものとして吸い込み、原因不明の疲弊に陥る。",
+        sign: "朝起きた時に起き上がれない、理由を聞かれても「わからない」と泣く、強いだるさ。",
+        action: "「他人の気持ちはあなたのせいじゃないよ」と伝え、一人静かに休める空間を完全に保障する。"
+      },
+      {
+        pair: ["月", "土星"],
+        title: "自己否定・「しっかりしなければ」の自責",
+        conflict: "ありのままの「月」に「土星」の重圧がかかる。親や先生の期待に応えようとし、「できない自分には価値がない」と自分を強く責めてしまう。",
+        sign: "「ごめんなさい」が口癖になる、完璧に準備できないと登校できない、自己肯定感の著しい低下。",
+        action: "どんな状態でも愛されていると実感できるよう、評価抜きのスキンシップや日常の小さな感謝を伝える。"
+      },
+      {
+        pair: ["太陽", "天王星"],
+        title: "自己表現と既存システムの衝突",
+        conflict: "人生の目的「太陽」と改革の「天王星」。理不尽な校則や先生の絶対的な態度に対して激しい疑問を感じ、合わない環境を突っぱねる。",
+        sign: "学校や社会のルールに対する強い批判、自分だけの独自ルールにこだわる、集団行動の拒絶。",
+        action: "論理的な対話を心がけ、「納得いかないよね」と気持ちを受け止めた上で、別のフィールドを探す。"
+      },
+      {
+        pair: ["太陽", "海王星"],
+        title: "自己像の揺らぎ・現実感の喪失",
+        conflict: "自我「太陽」と幻想の「海王星」。集団の中で自分がどう存在していいかわからなくなり、現実の学校生活にエネルギーを注げなくなる。",
+        sign: "昼夜逆転、ゲームやアニメの空想世界から戻れない、現実の会話に集中できない。",
+        action: "夢中になっている創作活動や世界観を肯定しつつ、生活リズムを少しずつ整える。"
+      },
+      {
+        pair: ["太陽", "冥王星"],
+        title: "オール・オア・ナッシングのプレッシャー",
+        conflict: "生き方「太陽」と根底からの変化「冥王星」。中途半端な自分を許せず、完璧にいかないならゼロ（行かない）を選んでしまう。",
+        sign: "極端な思考（「全部無理」「もう終わりだ」）、強いこだわり、家族への強い反抗。",
+        action: "「完璧じゃなくていい、10％できれば上等」という価値観を提示し、エネルギーの回復を待つ。"
+      },
+      {
+        pair: ["太陽", "土星"],
+        title: "自尊心の抑圧・エネルギーの低下",
+        conflict: "自分らしさ「太陽」にブレーキ「土星」がかかる。自信を失いやすく、新しい挑戦や復帰に対して極度の恐怖を感じる。",
+        sign: "ため息が増える、「どうせ自分なんて」という発言、身体を小さく丸める姿勢。",
+        action: "小さな達成感（好きなことでの小さな成功体験）を積み重ね、焦らせずに見守る。"
+      },
+      {
+        pair: ["水星", "海王星"],
+        title: "思考のフリーズ・言語化の困難",
+        conflict: "知性「水星」と曖昧さ「海王星」。自分の気持ちや困りごとを言葉にするのが極めて困難になり、「なぜ行けないのか」を聞かれるとパニックになる。",
+        sign: "質問されても黙り込む（フリーズ）、つじつまの合わない言い訳、ノートが取れない。",
+        action: "「言葉にしなくても伝わってるよ」と伝え、筆記や絵、選択肢など言葉以外の意思表示を促す。"
+      },
+      {
+        pair: ["水星", "冥王星"],
+        title: "思考の深読み・脳のオーバーヒート",
+        conflict: "思考「水星」と極端「冥王星」。他人の一言や空気を深読みしすぎ、「裏で悪口を言われているのではないか」などと過度に考え詰めてしまう。",
+        sign: "疑心暗鬼、夜眠れずに考え続ける、過去の嫌な言動を何度も思い返して苦しむ。",
+        action: "事実と思考（思い込み）を優しく区別してあげ、安心できる事実を繰り返し伝える。"
+      },
+      {
+        pair: ["水星", "土星"],
+        title: "発言への恐怖・理解速度へのプレッシャー",
+        conflict: "言葉「水星」と抑圧「土星」。間違ったことを言ったらどうしようという恐怖から、学校での発言やコミュニケーションを避けるようになる。",
+        sign: "極端に声が小さくなる、作文や宿題が進まない、人前での発表への強い拒絶。",
+        action: "家庭では正解・不正解のない会話を楽しみ、「どんな発言でも否定されない」安心感を与える。"
+      },
+      {
+        pair: ["水星", "天王星"],
+        title: "過敏な神経・授業への退屈感",
+        conflict: "情報処理の「水星」と刺激の「天王星」。脳の回転が速すぎるか独特で、一斉授業のスピードや内容に噛み合わず強いストレスを感じる。",
+        sign: "落ち着きがない、授業中の集中力が切れる、マニアックな分野への偏った知識。",
+        action: "ギフテッド的な側面を理解し、自分の興味のある分野を突き詰められる環境を提供する。"
+      },
+      {
+        pair: ["火星", "海王星"],
+        title: "気力の減退・主張の困難",
+        conflict: "行動力「火星」が「海王星」によって無力化される。やり返すエネルギーが湧かず、理不尽な状況でも嫌と言えない。",
+        sign: "朝、体に力が入らない、エネルギーが空っぽの感覚、いじめや嫌がらせを抱え込む。",
+        action: "親が代わりに境界線（「嫌なものは嫌」）を守ってあげ、体を休めることを最優先にする。"
+      },
+      {
+        pair: ["火星", "冥王星"],
+        title: "抑圧された葛藤の爆発",
+        conflict: "主張の「火星」と爆発力の「冥王星」。普段我慢しているストレスがある日突然、激しい癇癪や物・家族への反発として破裂する。",
+        sign: "壁を叩く・物を壊す、激しい暴言、突然のパニック。",
+        action: "安全を確保した上で怒りの感情自体は否定せず、「そこまで辛かったんだね」と根底の痛みに寄り添う。"
+      },
+      {
+        pair: ["火星", "土星"],
+        title: "行動のブレーキ・強い挫折感",
+        conflict: "情熱「火星」に障害の「土星」。頑張ろうとする気持ちと動けない現実の間で挟まれ、強い不全感とストレスを溜め込む。",
+        sign: "準備をするものの玄関で動けなくなる、歯を食いしばって耐える素振り、歯みがきや入浴の拒否。",
+        action: "「行こうとしただけで素晴らしい」と行動のプロセスを認め、ハードルを極限まで下げる。"
+      }
+    ];
+
+    // 天体×12星座の基本性質データ（不登校視点）
+    const PLANET_EXP = {
+      "太陽": {
+        role: "人生の目的・アイデンティティ",
+        signExp: {
+          "牡羊座": "自分らしさを貫くエネルギーが強く、型にはめられる学校生活に息苦しさを感じやすい性質です。",
+          "牡牛座": "自分のペースと快適な環境を何より大切にします。急かされることが大きなストレスになります。",
+          "双子座": "好奇心旺盛ですが、興味のない退屈な授業や閉塞感のある環境では集中が切れやすくなります。",
+          "蟹座": "安心できるホーム（家庭）や心の繋がりを重視します。アウェイな環境では傷つきやすい面があります。",
+          "獅子座": "個性を尊重されたい気持ちが強く、集団に埋もれたり否定されると一気に気力を失います。",
+          "乙女座": "完璧主義で細かいことに気づきやすいため、完璧にこなせないと感じるとプレッシャーで動けなくなります。",
+          "天秤座": "周囲の人間関係の調和を常に気遣うため、クラス内の摩擦や不協和音に人一倍疲弊します。",
+          "蠍座": "本質を大切にし、表面的な付き合いや理不尽なルールに対して深い葛藤を抱きやすい傾向です。",
+          "射手座": "自由な探求心を好み、理由のわからない束縛や枠組みに対して疑問を抱きやすくなります。",
+          "山羊座": "責任感が強く「期待に応えなきゃ」と抱え込みすぎ、キャパオーバーで限界に達することがあります。",
+          "水瓶座": "独自の価値観と自由な発想を持ち、伝統的・画一的な学校システムになじみにくさがあります。",
+          "魚座": "境界線が曖昧で非常に繊細。学校全体の空気感や他人のエネルギーを直接受け取ってしまいます。"
+        },
+        actionTip: {
+          "牡羊座": "【お守り・行動】赤い小物、スポーツタオル、1番を目指せる小さなゲームや目標設定。",
+          "牡牛座": "【お守り・行動】上質な手触りのブランケット、お気に入りのマグカップ、五感を満たす美味しいおやつ。",
+          "双子座": "【お守り・行動】お気に入りのノート、スマートフォンでの情報収集、新しいガジェットや文房具。",
+          "蟹座": "【お守り・行動】家族の写真を入れたキーホルダー、お気に入りのぬいぐるみ、温かいハーブティー。",
+          "獅子座": "【お守り・行動】ゴールドのアクセサリー、自己表現のためのスケッチブック、主役になれるゲーム。",
+          "乙女座": "【お守り・行動】綺麗に整理されたデスク、お気に入りのスケジュール帳、ハーブの香りのアイテム。",
+          "天秤座": "【お守り・行動】お気に入りのアロマ、可愛いインテリア、ペアのグッズや綺麗なアート作品。",
+          "蠍座": "【お守り・行動】秘密基地のような自分だけの空間、ダークカラーのお守り、ミステリー小説。",
+          "射手座": "【お守り・行動】世界地図や地球儀、アウトドアグッズ、旅行のパンフレットを見る時間。",
+          "山羊座": "【お守り・行動】本革の手帳、腕時計、達成感が目に見えるコレクションケース。",
+          "水瓶座": "【お守り・行動】最先端のデジタル機器、宇宙や科学の図鑑、個性的なTシャツやスニーカー。",
+          "魚座": "【お守り・行動】アロマディフューザー、ヒーリング音楽、水辺の散歩やアクアリウムの映像。"
+        }
+      },
+      "月": {
+        role: "素の感情・安心の欲求・無意識の反応",
+        signExp: {
+          "牡羊座": "本音をストレートに出したい一方で、我慢が続くと突然ドカンと爆発しやすい感情を持ちます。",
+          "牡牛座": "静かな空間や好きな触感、美味しい食事など、感覚的な心地よさがないと安心できません。",
+          "双子座": "頭の中で常に色々な情報が駆け巡り、気持ちが休まりにくい繊細な神経を持っています。",
+          "蟹座": "家族や親しい人の感情に強く同調します。家庭が一番の充電場所であり、守りを必要とします。",
+          "獅子座": "傷つくと言葉を失い内側に閉じこもりますが、認めてもらえると豊かな創造性を発揮します。",
+          "乙女座": "自分の感情に対しても完璧を求めがちで、不調な自分を責めてしまいやすい性質です。",
+          "天秤座": "常に「いい子」でいようと相手に合わせ、無意識のうちに限界まで我慢してしまいます。",
+          "蠍座": "信頼した相手にしか本音を見せません。不安を感じると心のシャッターを強く閉じます。",
+          "射手座": "心が傷つくとどこか遠くへ逃げ出したくなるなど、自由な空間を求めます。",
+          "山羊座": "「ちゃんと自己管理しなきゃ」と感情を抑え込み、辛さを外に出しにくいところがあります。",
+          "水瓶座": "自分の感情を客観視しすぎてしまい、辛さをクールに見せかけて抱え込んでしまいます。",
+          "魚座": "まるでスポンジのように他人の悲しみや攻撃性を吸い取るため、一人の静かな時間が絶対必要です。"
+        }
+      },
+      "水星": {
+        role: "思考・言語化・学びのスタイル",
+        signExp: {
+          "牡羊座": "直感的に理解するタイプで、興味のあることには驚異的な集中力を発揮します。",
+          "牡牛座": "じっくり時間をかけて理解・消化するスタイル。早さを求められるとフリーズします。",
+          "双子座": "マルチタスクが得意で情報収集力が高く、興味の幅が広いため好きな分野で輝きます。",
+          "蟹座": "感情と記憶が強く結びつくため、嫌な思い出や先生の言葉が強く心に残りやすい性質です。",
+          "獅子座": "表現力が豊かで、自分の考えを発表したり創作したりする場面で能力を発揮します。",
+          "乙女座": "分析力が高く細かい間違いに気づきやすい反面、失敗への恐怖心が強くなることがあります。",
+          "天秤座": "両方の意見を尊重しようとするため、自分の意見を一つにまとめて発言するのが苦手です。",
+          "蠍座": "深く探求する思考を持ち、表面的・浅い学びには興味を示しにくい職人タイプです。",
+          "射手座": "大きな概念や未来の可能性に興味を持ち、興味のあるテーマを独学でどんどん深めます。",
+          "山羊座": "論理的で体系的な理解が得意。役に立つ知識や目標に繋がる学びに強みがあります。",
+          "水瓶座": "デジタルや最新技術、独自の理論に強く、型にはまらない学習方法で伸びます。",
+          "魚座": "感覚的・イメージで思考するため、論理的な言葉で説明を求められると固まりやすい傾向です。"
+        },
+        actionTip: {
+          "牡羊座": "【勉強法】短時間で一気に集中するスタイル（ポモドーロテクニックなど）。クイズ形式のアプリ学習。",
+          "牡牛座": "【勉強法】図解やイラストが多い参考書を使い、自分のペースでじっくりノートに書き写す学習。",
+          "双子座": "【勉強法】YouTubeの解説動画やラジオ講座、タブレットを使ったスピード感のある学習。",
+          "蟹座": "【勉強法】親や信頼できる人が隣に寄り添い、「すごいね」と承認しながら一緒に進める学習。",
+          "獅子座": "【勉強法】自分が先生になって教えるロールプレイ学習、発表形式やクイズで競う勉強法。",
+          "乙女座": "【勉強法】綺麗な文房具を揃え、ToDoリストを作って1つずつチェックを入れていくクリア型の学習。",
+          "天秤座": "【勉強法】お友達やオンラインの仲間と一緒にカフェやリビングで並んでおこなう並走学習。",
+          "蠍座": "【勉強法】興味のある一つの分野をトコトン深掘りする図鑑・専門書を用いた探求型学習。",
+          "射手座": "【勉強法】歴史や地理など壮大なストーリーを感じられる映像教材や、海外の文化に触れる学習。",
+          "山羊座": "【勉強法】合格手帳や資格試験のロードマップを立て、着実にステップを登る堅実な学習。",
+          "水瓶座": "【勉強法】プログラミング、AIツール、オンラインコミュニティを活用した自習スタイル。",
+          "魚座": "【勉強法】BGMに音楽を流しながら、イメージやマインドマップ、絵を描くような感覚的な学習。"
+        }
+      },
+      "金星": {
+        role: "好きなこと・喜び・魅力",
+        signExp: {
+          "牡羊座": "新しいチャレンジや自分が主役になれる楽しさに生き生きと反応します。",
+          "牡牛座": "五感（アート、音楽、美味しいもの、触れ合い）を楽しむことで心が満たされます。",
+          "双子座": "おしゃべりや読書、ゲームなど、情報やコミュニケーションを楽しむことがエネルギー源です。",
+          "蟹座": "家族やペット、温かい空間で過ごす時間に幸せを感じます。",
+          "獅子座": "自分らしさを自由に表現すること（絵、演劇、ファッション、ダンスなど）が喜びです。",
+          "乙女座": "整理整頓や身の回りを綺麗にすること、小さな作品を作ることに没頭します。",
+          "天秤座": "美しく整ったデザインやおしゃれ、良好な対人関係に癒ややされます。",
+          "蠍座": "自分が本当に好きな特定のテーマや世界観にどっぷりハマる深さがあります。",
+          "射手座": "冒険心を満たすサブカルチャー、ゲーム世界、旅や外国文化などに惹かれます。",
+          "山羊座": "伝統的なものや成果が目に見えるクラフト、ゲームのコレクションなどに喜びを感じます。",
+          "水瓶座": "ネットコミュニティやサブカル、自分だけのマニアックな世界に心を躍らせます。",
+          "魚座": "アニメ、音楽、ファンタジー、動物など、優しい世界線に浸ることが最高の癒やしです。"
+        },
+        actionTip: {
+          "牡羊座": "【趣味の例】アクションゲーム、スポーツ観戦、新しいことに挑戦する工作やプラモデル作り。",
+          "牡牛座": "【趣味の例】粘土細工、料理・お菓子作り、植物の栽培、美しい音楽を聴くこと。",
+          "双子座": "【趣味の例】SNSやチャットでの交流、クイズ、ボードゲーム、小説の読書、言語学習。",
+          "蟹座": "【趣味の例】ぬいぐるみ集め、お絵描き、家族やペットとのまったり時間、料理のお手伝い。",
+          "獅子座": "【趣味の例】コスプレ、イラスト・キャラクターデザイン、動画制作、演劇・音楽活動。",
+          "乙女座": "【趣味の例】レゴブロック、手芸・刺繍、コレクションの整理、細かいドット絵制作。",
+          "天秤座": "【趣味の例】ファッションコーディネート、インテリアの模様替え、お洒落なカフェ巡り（テイクアウト等）。",
+          "蠍座": "【趣味の例】ミステリー・推理小説、ディープなアニメ・ゲームの世界観への没頭、写真撮影。",
+          "射手座": "【趣味の例】オープンワールドのRPGゲーム、歴史・神話の調べもの、キャンプ・自然散策。",
+          "山羊座": "【趣味の例】歴史的建造物の模型作り、資格の勉強、パズル、歴史シミュレーションゲーム。",
+          "水瓶座": "【趣味の例】プログラミング、ロボット工作、ネット上の創作コミュニティ、SF映画鑑賞。",
+          "魚座": "【趣味の例】ファンタジー小説、絵画・水彩画、音楽鑑賞、動物や海の生き物との触れ合い。"
+        }
+      },
+      "火星": {
+        role: "行動力・不満の出し方・主張",
+        signExp: {
+          "牡羊座": "エネルギーが強く直情的。抑圧されるとイライラが直球で出やすいエネルギーです。",
+          "牡牛座": "頑固さとして出やすく、納得がいかないことには絶対に動こうとしない強さを持ちます。",
+          "双子座": "言葉による反論や、あちこちに意識を散らすことでストレスを散らし、行動を起こします。",
+          "蟹座": "身内を守るために強く行動します。怒りを内に溜め込むと体調（特にお腹）に出やすいです。",
+          "獅子座": "プライドが傷つくと意固地になりやすいですが、やる気スイッチが入るとパワフルです。",
+          "乙女座": "不満を批判的な思考や細かい作業への没頭に変えて処理しようとします。",
+          "天秤座": "人に波風を立てるのが嫌で怒りを表現できず、エネルギーが枯渇しやすい傾向です。",
+          "蠍座": "怒りや悔しさを内面に深く溜め込みます。静かですが強固な意志の強さを持ちます。",
+          "射手座": "不満を感じるとその場から離れたくなり、新しい目標や場所へ意識を飛ばします。",
+          "山羊座": "エネルギーをコントロールしようとし、無駄な抵抗よりも静かな拒否として現れます。",
+          "水瓶座": "「なぜそうしなければならないのか」という理屈で主張し、独自の行動スタイルを貫きます。",
+          "魚座": "怒りのエネルギーを外に出すのが苦手で、涙が出たり、エネルギーが湧かなくなったりします。"
+        },
+        actionTip: {
+          "牡羊座": "【スポーツ・発散】短距離走、トランポリン、パンチングバッグ、体を思い切り動かす球技。",
+          "牡牛座": "【スポーツ・発散】散歩、ハイキング、陶芸で土に触れること、美味しいものをしっかり食べて休む。",
+          "双子座": "【スポーツ・発散】自転車でのサイクリング、ダンス、縄跳び、手先を使うアクションゲーム。",
+          "蟹座": "【スポーツ・発散】水泳や温水プール、お風呂でのリラックス、クッションを思い切り叩いて発散。",
+          "獅子座": "【スポーツ・発散】ダンス、カラオケで大きな声を出すこと、表現力を伴う身体運動。",
+          "乙女座": "【スポーツ・発散】ヨガやストレッチ、部屋の徹底的な片付けや掃除でストレスを昇華する。",
+          "天秤座": "【スポーツ・発散】バドミントンや卓球など誰かと楽しくラリーができる軽スポーツ。",
+          "蠍座": "【スポーツ・発散】一人で黙々と取り組める筋トレ、スイミング、深夜のウォーキング。",
+          "射手座": "【スポーツ・発散】ジョギング、ボルダリング、新しい場所への冒険・探検ウォーク。",
+          "山羊座": "【スポーツ・発散】登山、ウォーキング、目標を決めた体力づくり（毎日〇回スクワット等）。",
+          "水瓶座": "【スポーツ・発散】インラインスケート、新しいテクノロジーを活用したフィットネスゲーム。",
+          "魚座": "【スポーツ・発散】水中運動、お風呂でのリフレッシュ、アロママッサージ、布団での深呼吸ストレッチ。"
+        }
+      },
+      "木星": {
+        role: "幸運の鍵・肯定できる強み・発展性",
+        signExp: {
+          "牡羊座": "先入観にとらわれず直感で一歩を踏み出すことが、未来を拓く鍵になります。",
+          "牡牛座": "自分のペースと身体感覚を大切にすることで、豊かな才能が開花します。",
+          "双子座": "多様な知識や興味を自由に楽しむことで、周りにも明るい影響を与えます。",
+          "蟹座": "家族や身近な人との温かい絆が、最大の自己肯定感の源泉になります。",
+          "獅子座": "自分の個性を伸び伸びと表現することで、人を惹きつける魅力が生まれます。",
+          "乙女座": "誰かの役に立ったり、自分のスキルを磨いたりすることで自信が育まれます。",
+          "天秤座": "客観的な視点と相手を尊重する優しさが、良質な縁を引き寄せます。",
+          "蠍座": "一つのことをとことん極める深い集中力が、大きな成果をもたらします。",
+          "射手座": "広い視野を持ち、自分の好きな世界を探求し続けることで道が広がります。",
+          "山羊座": "焦らず着実に積み重ねることで、確実な信頼と実力を手に入れます。",
+          "水瓶座": "人と違う視点や個性を肯定することで、時代に合った独自の可能性が拓けます。",
+          "魚座": "豊かな感性と優しい共感力が、自分自身と周りの人を癒やす大きな力となります。"
+        },
+        actionTip: {
+          "牡羊座": "【開運行動】「まずやってみる」の精神で小さな新しい体験を重ねる。赤色の小物を身につける。",
+          "牡牛座": "【開運行動】お気に入りの食器で美味しいものを食べる。自然豊かな公園をゆっくり歩く。",
+          "双子座": "【開運行動】気になる本をたくさん読む。新しい言葉や挨拶を積極的に楽しむ。",
+          "蟹座": "【開運行動】家族みんなで食卓を囲む時間を作る。部屋のインテリアを心地よく整える。",
+          "獅子座": "【開運行動】褒められたことを素直に受け取る。自分の作品を家族に見せて賞賛してもらう。",
+          "乙女座": "【開運行動】小さな親切やお手伝いをする。机の上を綺麗に整理整頓する。",
+          "天秤座": "【開運行動】お部屋に一輪の花を飾る。お互いの意見を尊重し合う対話の時間を持つ。",
+          "蠍座": "【開運行動】好きなことに時間を忘れて没頭する。秘密のノートや自分だけの宝物を作る。",
+          "射手座": "【開運行動】遠くの景色を見に行くドライブや小旅行。未知の分野の本や動画を開拓する。",
+          "山羊座": "【開運行動】日々の小さな達成をカレンダーにシールで記録する。伝統的な行事を大切にする。",
+          "水瓶座": "【開運行動】ネットやオンラインで気の合う仲間と繋がる。古い常識に捉われないユニークな挑戦。",
+          "魚座": "【開運行動】アートに触れる、音楽を聴いて涙を流す、困っている人にそっと優しさの手を差し伸べる。"
+        }
+      },
+      "土星": {
+        role: "試練・過剰な苦手意識・成長の課題",
+        signExp: {
+          "牡羊座": "「自分を出してはいけない」「主導権を握るのが怖い」というブレーキがかかりやすい傾向です。",
+          "牡牛座": "「自分のペースが乱される恐怖」や、体調管理・規則的な生活に苦手意識を感じやすくなります。",
+          "双子座": "「上手に話さなければならない」「理解が遅いのではないか」という言葉へのプレッシャーです。",
+          "蟹座": "「安心できる居場所を失う恐怖」や、集団の中で素の自分を出すことへの不安です。",
+          "獅子座": "「目立ってはいけない」「評価されないのが怖い」と自分の好きを表現するのに慎重になります。",
+          "乙女座": "「完璧でなければならない」という強い強迫観念が、行動を止めてしまう原因になりやすいです。",
+          "天秤座": "「人に嫌われてはいけない」と対人関係で過剰に気を遣いすぎ、疲弊してしまいます。",
+          "蠍座": "「人を信用するのが怖い」「深く関わって傷つくのが怖い」という警戒心として現れます。",
+          "射手座": "「間違いを犯してはいけない」と慎重になり、自由にチャレンジすることにブレーキがかかります。",
+          "山羊座": "「しっかりしなければ」「社会の枠組みに従わねば」と過剰にプレッシャーを感じます。",
+          "水瓶座": "「みんなと違って浮いてしまう恐怖」と「個性を守りたい気持ち」の間で葛藤します。",
+          "魚座": "「自分の気持ちや境界線を守るのが難しい」と感じ、外界の刺激から身を守る壁を作ります。"
+        }
+      }
+    };
+
+    // 星座定義
+    const ZODIAC = [
+      { name: "牡羊座", elem: "火", mode: "活動", ruler: "火星", icon: "♈" },
+      { name: "牡牛座", elem: "地", mode: "固定", ruler: "金星", icon: "♉" },
+      { name: "双子座", elem: "風", mode: "柔軟", ruler: "水星", icon: "♊" },
+      { name: "蟹座",   elem: "水", mode: "活動", ruler: "月",   icon: "♋" },
+      { name: "獅子座", elem: "火", mode: "固定", ruler: "太陽", icon: "♌" },
+      { name: "乙女座", elem: "地", mode: "柔軟", ruler: "水星", icon: "♍" },
+      { name: "天秤座", elem: "風", mode: "活動", ruler: "金星", icon: "♎" },
+      { name: "蠍座",   elem: "水", mode: "固定", ruler: "冥王星", icon: "♏" },
+      { name: "射手座", elem: "火", mode: "柔軟", ruler: "木星", icon: "♐" },
+      { name: "山羊座", elem: "地", mode: "活動", ruler: "土星", icon: "♑" },
+      { name: "水瓶座", elem: "風", mode: "固定", ruler: "天王星", icon: "♒" },
+      { name: "魚座",   elem: "水", mode: "柔軟", ruler: "海王星", icon: "♓" }
+    ];
+
+    // アスペクト検出関数（トランスサタニアン含め全10天体対象）
+    function findAspects(planets) {
+      const keys = ["太陽", "月", "水星", "金星", "火星", "木星", "土星", "天王星", "海王星", "冥王星"];
+      const aspectList = [];
+
+      const aspectTypes = [
+        { name: "コンジャンクション (0°)", angle: 0, orb: 8, type: "hard", nature: "エネルギーが強力に合一・強調" },
+        { name: "オポジション (180°)", angle: 180, orb: 8, type: "hard", nature: "張り詰めた緊張・見張り合い" },
+        { name: "スクエア (90°)", angle: 90, orb: 7, type: "hard", nature: "突然の衝突・方向性の葛藤" },
+        { name: "トライン (120°)", angle: 120, orb: 7, type: "soft", nature: "スムーズな循環・天然の才能" },
+        { name: "セクスタイル (60°)", angle: 60, orb: 5, type: "soft", nature: "意識すると活きるサポート関係" }
+      ];
+
+      for (let i = 0; i < keys.length; i++) {
+        for (let j = i + 1; j < keys.length; j++) {
+          let p1 = keys[i];
+          let p2 = keys[j];
+          if (!planets[p1] || !planets[p2]) continue;
+
+          let deg1 = planets[p1].deg;
+          let deg2 = planets[p2].deg;
+
+          let diff = Math.abs(deg1 - deg2);
+          if (diff > 180) diff = 360 - diff;
+
+          for (let asp of aspectTypes) {
+            if (Math.abs(diff - asp.angle) <= asp.orb) {
+              aspectList.push({
+                p1: p1,
+                p2: p2,
+                aspectName: asp.name,
+                type: asp.type,
+                nature: asp.nature
+              });
+              break;
+            }
+          }
+        }
+      }
+      return aspectList;
+    }
+
+    function d2r(d) { return d * Math.PI / 180; }
+    function r2d(r) { return r * 180 / Math.PI; }
+    function fix360(deg) { return (deg % 360 + 360) % 360; }
+
+    // 高精度な天文計算アルゴリズム（トランスサタニアン追加版）
+    function calculatePlanets(dateObj) {
+      const utcDate = new Date(dateObj.getTime() - (dateObj.getTimezoneOffset() * 60000));
+      const year = utcDate.getUTCFullYear();
+      const month = utcDate.getUTCMonth() + 1;
+      const day = utcDate.getUTCDate();
+      const hour = utcDate.getUTCHours();
+      const minute = utcDate.getUTCMinutes();
+      const second = utcDate.getUTCSeconds();
+
+      let Y = year, M = month;
+      if (M <= 2) { Y -= 1; M += 12; }
+      const A = Math.floor(Y / 100);
+      const B = 2 - A + Math.floor(A / 4);
+      const dayFrac = day + (hour + minute / 60 + second / 3600) / 24;
+      const JD = Math.floor(365.25 * (Y + 4716)) + Math.floor(30.6001 * (M + 1)) + dayFrac + B - 1524.5;
+
+      const d = JD - 2451543.5;
+
+      // 太陽
+      const w_sun = 282.9404 + 4.70935e-5 * d;
+      const M_sun = fix360(356.0470 + 0.9856002585 * d);
+      const E_sun = M_sun + r2d(0.016709 * Math.sin(d2r(M_sun)));
+      const x_sun = Math.cos(d2r(E_sun)) - 0.016709;
+      const y_sun = Math.sin(d2r(E_sun)) * Math.sqrt(1 - 0.016709 * 0.016709);
+      const sun_deg = fix360(r2d(Math.atan2(y_sun, x_sun)) + w_sun);
+
+      // 月
+      const N_moon = fix360(125.1228 - 0.0529538083 * d);
+      const w_moon = fix360(318.0634 + 0.1643573223 * d);
+      const M_moon = fix360(115.3654 + 13.0649929509 * d);
+      const E_moon = M_moon + r2d(0.054900 * Math.sin(d2r(M_moon)));
+      const x_m = Math.cos(d2r(E_moon)) - 0.054900;
+      const y_m = Math.sin(d2r(E_moon)) * Math.sqrt(1 - 0.054900 * 0.054900);
+      const v_m = r2d(Math.atan2(y_m, x_m));
+      const u_m = fix360(v_m + w_moon);
+      const moon_deg = fix360(u_m + N_moon + 0.5 * Math.sin(d2r(u_m)));
+
+      function getPlanetDeg(N, i, w, a, e, M_deg) {
+        let E = M_deg + r2d(e * Math.sin(d2r(M_deg)));
+        for(let k=0; k<3; k++) {
+          E = E - (E - r2d(e * Math.sin(d2r(E))) - M_deg) / (1 - e * Math.cos(d2r(E)));
+        }
+        let xv = a * (Math.cos(d2r(E)) - e);
+        let yv = a * Math.sqrt(1 - e * e) * Math.sin(d2r(E));
+        let v = r2d(Math.atan2(yv, xv));
+        let r = Math.sqrt(xv * xv + yv * yv);
+
+        let xh = r * (Math.cos(d2r(N)) * Math.cos(d2r(v + w)) - Math.sin(d2r(N)) * Math.sin(d2r(v + w)) * Math.cos(d2r(i)));
+        let yh = r * (Math.sin(d2r(N)) * Math.cos(d2r(v + w)) + Math.cos(d2r(N)) * Math.sin(d2r(v + w)) * Math.cos(d2r(i)));
+
+        let xs = Math.cos(d2r(sun_deg));
+        let ys = Math.sin(d2r(sun_deg));
+
+        let xg = xh + xs;
+        let yg = yh + ys;
+
+        return fix360(r2d(Math.atan2(yg, xg)));
+      }
+
+      const mer_deg = getPlanetDeg(48.3313 + 3.24587e-5 * d, 7.0047, 29.1241 + 1.01444e-5 * d, 0.387098, 0.205635, fix360(168.6562 + 4.0923344368 * d));
+      const ven_deg = getPlanetDeg(76.6799 + 2.46590e-5 * d, 3.3946, 54.8910 + 1.38374e-5 * d, 0.723330, 0.006773, fix360(48.0052 + 1.6021302244 * d));
+      const mar_deg = getPlanetDeg(49.5574 + 2.11081e-5 * d, 1.8497, 286.5016 + 2.92961e-5 * d, 1.523688, 0.093405, fix360(18.6021 + 0.5240207766 * d));
+      const jup_deg = getPlanetDeg(100.4542 + 2.76854e-5 * d, 1.3030, 273.8777 + 1.64505e-5 * d, 5.20256, 0.048498, fix360(19.8950 + 0.0830853001 * d));
+      const sat_deg = getPlanetDeg(113.6655 + 2.38980e-5 * d, 2.4886, 339.3939 + 2.97661e-5 * d, 9.55475, 0.055546, fix360(316.9670 + 0.0334442282 * d));
+
+      // トランスサタニアン（概算平均軌道位置）
+      const ura_deg = getPlanetDeg(74.0005 + 1.3978e-5 * d, 0.7733, 96.9988 + 3.0565e-5 * d, 19.18171, 0.047318, fix360(142.5905 + 0.011725806 * d));
+      const nep_deg = getPlanetDeg(131.7806 + 3.0173e-5 * d, 1.7700, 273.1872 + 2.7234e-5 * d, 30.05826, 0.008606, fix360(260.2471 + 0.005995147 * d));
+      const plu_deg = getPlanetDeg(110.3034 + 1.3978e-5 * d, 17.1417, 113.7632 + 3.0565e-5 * d, 39.48168, 0.248807, fix360(14.882 + 0.0039757 * d));
+
+      const node_deg = N_moon;
+      const south_node_deg = fix360(N_moon + 180);
+
+      function getZodiacInfo(deg) {
+        const index = Math.floor(deg / 30);
+        return {
+          zodiac: ZODIAC[index],
+          deg: deg,
+          signName: ZODIAC[index].name
+        };
+      }
+
+      return {
+        "太陽": getZodiacInfo(sun_deg),
+        "月": getZodiacInfo(moon_deg),
+        "水星": getZodiacInfo(mer_deg),
+        "金星": getZodiacInfo(ven_deg),
+        "火星": getZodiacInfo(mar_deg),
+        "木星": getZodiacInfo(jup_deg),
+        "土星": getZodiacInfo(sat_deg),
+        "天王星": getZodiacInfo(ura_deg),
+        "海王星": getZodiacInfo(nep_deg),
+        "冥王星": getZodiacInfo(plu_deg),
+        "ドラゴンヘッド": getZodiacInfo(node_deg),
+        "ドラゴンテイル": getZodiacInfo(south_node_deg)
+      };
+    }
+
+    // イベントリスナー設置
+    document.getElementById('astrologyForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const childName = document.getElementById('childName').value.trim() || "お子様";
+      const dateStr = document.getElementById('birthDate').value;
+      const timeStr = document.getElementById('birthTime').value || "12:00";
+
+      if (!dateStr) return;
+
+      const dateObj = new Date(`${dateStr}T${timeStr}:00+09:00`);
+      const planets = calculatePlanets(dateObj);
+
+      // 4元素カウント
+      const elementCounts = { "火": 0, "地": 0, "風": 0, "水": 0 };
+      const targets = ["太陽", "月", "水星", "金星", "火星", "木星", "土星", "天王星", "海王星", "冥王星", "ドラゴンヘッド", "ドラゴンテイル"];
+      
+      targets.forEach(p => {
+        const elem = planets[p].zodiac.elem;
+        elementCounts[elem]++;
+      });
+
+      // ① エレメント表示更新
+      const elementCardsHtml = Object.keys(ELEMENT_EXP).map(elem => {
+        const count = elementCounts[elem];
+        const info = ELEMENT_EXP[elem];
+        return `
+          <div class="${info.lightBg} border ${info.borderColor} p-4 rounded-2xl flex flex-col items-center text-center">
+            <span class="text-xs font-bold ${info.textColor}">${elem}元素</span>
+            <span class="text-2xl font-bold my-1 ${info.textColor}">${count} <span class="text-xs">天体</span></span>
+            <div class="w-full bg-slate-200 rounded-full h-2 overflow-hidden mt-1">
+              <div class="${info.color} h-2 rounded-full" style="width: ${(count/12)*100}%"></div>
+            </div>
+          </div>
+        `;
+      }).join('');
+      document.getElementById('elementCards').innerHTML = elementCardsHtml;
+
+      // エレメント詳細解説（0〜1個：不足 / 4個以上：過多）
+      let elementDiagnosisHtml = '';
+      Object.keys(ELEMENT_EXP).forEach(elem => {
+        const count = elementCounts[elem];
+        const info = ELEMENT_EXP[elem];
+        let statusTag = '';
+        let statusExp = '';
+
+        if (count <= 1) {
+          statusTag = `<span class="px-2.5 py-1 bg-rose-100 text-rose-700 text-xs font-bold rounded-lg">不足（${count}個）</span>`;
+          statusExp = `<p class="mt-1 text-slate-700"><strong>【不足の傾向】</strong> ${info.lack}</p>`;
+        } else if (count >= 4) {
+          statusTag = `<span class="px-2.5 py-1 bg-purple-100 text-purple-700 text-xs font-bold rounded-lg">過多（${count}個）</span>`;
+          statusExp = `<p class="mt-1 text-slate-700"><strong>【過多の傾向】</strong> ${info.excess}</p>`;
+        } else {
+          statusTag = `<span class="px-2.5 py-1 bg-slate-100 text-slate-600 text-xs font-bold rounded-lg">標準バランス（${count}個）</span>`;
+          statusExp = `<p class="mt-1 text-slate-600 text-xs">元素のバランスは保たれており、極端な偏りは少ない状態です。</p>`;
+        }
+
+        elementDiagnosisHtml += `
+          <div class="p-4 rounded-2xl border border-slate-100 bg-slate-50/50">
+            <div class="flex items-center justify-between mb-2">
+              <h4 class="font-bold text-slate-800">${info.title}</h4>
+              ${statusTag}
+            </div>
+            ${statusExp}
+          </div>
+        `;
+      });
+      document.getElementById('elementDetailDiagnosis').innerHTML = elementDiagnosisHtml;
+
+      // ② 7天体詳細表示
+      const mainPlanets = ["太陽", "月", "水星", "金星", "火星", "木星", "土星"];
+      const planetsHtml = mainPlanets.map(pName => {
+        const pData = planets[pName];
+        const pExp = PLANET_EXP[pName];
+        const signText = pExp.signExp[pData.signName] || "独自の感性を持っています。";
+        return `
+          <div class="p-4 rounded-2xl border border-slate-100 bg-white shadow-sm flex flex-col sm:flex-row gap-4 items-start">
+            <div class="w-12 h-12 rounded-xl bg-indigo-50 flex items-center justify-center text-xl shrink-0 text-indigo-600 font-bold">
+              ${pData.zodiac.icon}
+            </div>
+            <div class="space-y-1 flex-1">
+              <div class="flex items-center gap-2">
+                <span class="font-bold text-slate-900">${pName} × ${pData.signName}</span>
+                <span class="text-xs px-2 py-0.5 rounded bg-slate-100 text-slate-600 font-medium">${pExp.role}</span>
+              </div>
+              <p class="text-xs leading-relaxed text-slate-600">${signText}</p>
+            </div>
+          </div>
+        `;
+      }).join('');
+      document.getElementById('planetsDetail').innerHTML = planetsHtml;
+
+      // ③ アスペクト表示（ハードアスペクトDB照合付き）
+      const aspects = findAspects(planets);
+      let aspectsHtml = '';
+      let matchedHardAspectsCount = 0;
+
+      aspects.forEach(asp => {
+        if (asp.type === 'hard') {
+          // DB検索
+          const dbItem = HARD_ASPECT_DB.find(item => 
+            (item.pair[0] === asp.p1 && item.pair[1] === asp.p2) ||
+            (item.pair[0] === asp.p2 && item.pair[1] === asp.p1)
+          );
+
+          if (dbItem) {
+            matchedHardAspectsCount++;
+            aspectsHtml += `
+              <div class="p-5 rounded-2xl border border-rose-100 bg-gradient-to-br from-rose-50/40 to-orange-50/30 space-y-3">
+                <div class="flex items-center justify-between border-b border-rose-100 pb-2">
+                  <div class="flex items-center gap-2">
+                    <span class="px-2.5 py-0.5 rounded-lg bg-rose-500 text-white font-bold text-xs">${asp.p1} × ${asp.p2}</span>
+                    <span class="text-xs font-bold text-rose-900">${dbItem.title}</span>
+                  </div>
+                  <span class="text-[10px] px-2 py-0.5 bg-rose-100 text-rose-800 rounded font-bold">${asp.aspectName}</span>
+                </div>
+
+                <div class="space-y-2 text-xs">
+                  <div class="bg-white/80 p-3 rounded-xl border border-rose-100/60">
+                    <span class="font-bold text-rose-800 block mb-0.5">① 起こりやすい葛藤・不登校の傾向</span>
+                    <p class="text-slate-700 leading-relaxed">${dbItem.conflict}</p>
+                  </div>
+                  <div class="bg-white/80 p-3 rounded-xl border border-rose-100/60">
+                    <span class="font-bold text-amber-800 block mb-0.5">② 隠された子供のサイン</span>
+                    <p class="text-slate-700 leading-relaxed">${dbItem.sign}</p>
+                  </div>
+                  <div class="bg-white/80 p-3 rounded-xl border border-rose-100/60">
+                    <span class="font-bold text-emerald-800 block mb-0.5">③ 親ができる対策・アプローチ</span>
+                    <p class="text-slate-700 leading-relaxed">${dbItem.action}</p>
+                  </div>
+                </div>
+              </div>
+            `;
+          }
+        }
+      });
+
+      if (matchedHardAspectsCount === 0) {
+        aspectsHtml = `
+          <div class="p-4 rounded-2xl bg-indigo-50/60 border border-indigo-100 text-xs text-indigo-900 leading-relaxed">
+            <p class="font-bold mb-1">✨ メジャーな摩擦アスペクトは見られません</p>
+            <p>天体同士の強い衝突は少なく、エネルギーがスムーズに流れやすい配置です。お子様自身の基本的なペースや元素バランスを尊重したアプローチが効果的です。</p>
+          </div>
+        `;
+      }
+      document.getElementById('aspectsDetail').innerHTML = aspectsHtml;
+
+      // ④ 隠れた才能発掘（太陽・水星・金星・火星・木星）
+      const talentsHtml = [
+        { p: "太陽", title: "【太陽】元気の源・お守りアイテム", color: "from-amber-500 to-orange-500" },
+        { p: "水星", title: "【水星】無理のない学習法・勉強スタイル", color: "from-sky-500 to-blue-500" },
+        { p: "金星", title: "【金星】心ときめく趣味・推し活のヒント", color: "from-pink-500 to-rose-500" },
+        { p: "火星", title: "【火星】エネルギー発散・スポーツ", color: "from-red-500 to-orange-500" },
+        { p: "木星", title: "【木星】運気好転の開運アクション", color: "from-purple-500 to-indigo-500" }
+      ].map(item => {
+        const pData = planets[item.p];
+        const pExp = PLANET_EXP[item.p];
+        const tipText = pExp.actionTip ? pExp.actionTip[pData.signName] : "個性を活かしたアプローチを取り入れましょう。";
+        return `
+          <div class="bg-white rounded-2xl p-4 shadow-sm border border-amber-100 flex flex-col justify-between">
+            <div>
+              <div class="text-xs font-bold text-amber-700 mb-1">${item.title}</div>
+              <div class="font-bold text-slate-800 text-sm mb-2">${item.p}：${pData.signName} (${pData.zodiac.icon})</div>
+              <p class="text-xs text-slate-700 leading-relaxed bg-amber-50/60 p-2.5 rounded-xl border border-amber-100/60">${tipText}</p>
+            </div>
+          </div>
+        `;
+      }).join('');
+      document.getElementById('talentsDetail').innerHTML = talentsHtml;
+
+      // ⑤ 声掛け＆ケア
+      let careHtml = '';
+      Object.keys(ELEMENT_EXP).forEach(elem => {
+        const count = elementCounts[elem];
+        const info = ELEMENT_EXP[elem];
+
+        if (count <= 1 || count >= 4) {
+          const stateLabel = count <= 1 ? "【不足ケア（0〜1個）】" : "【過多ケア（4個〜）】";
+          careHtml += `
+            <div class="p-4 rounded-2xl border ${info.borderColor} ${info.lightBg} space-y-2">
+              <div class="flex items-center gap-2">
+                <span class="px-2 py-0.5 rounded ${info.color} text-white font-bold text-xs">${elem}元素 ${stateLabel}</span>
+                <h4 class="font-bold text-xs ${info.textColor}">${info.title}</h4>
+              </div>
+              <div class="text-xs text-slate-700 leading-relaxed">
+                <p><strong>💡 接し方・声掛けのコツ：</strong> ${info.careMsg}</p>
+                <p class="mt-1"><strong>🌿 おすすめアロマ・環境調整：</strong> ${info.aroma}</p>
+              </div>
+            </div>
+          `;
+        }
+      });
+      if (!careHtml) {
+        careHtml = `
+          <div class="p-4 rounded-2xl bg-indigo-50 border border-indigo-100 text-xs text-indigo-900 leading-relaxed">
+            <p><strong>🌿 バランス良好なケアアプローチ：</strong></p>
+            <p class="mt-1">4元素が偏りなく分散されています。お子様がその日心地よいと感じる感覚（好きな香り、心地よい音、美味しいご飯など）を一つずつ満たしてあげる基本ケアが効果的です。</p>
+          </div>
+        `;
+      }
+      document.getElementById('careDetail').innerHTML = careHtml;
+
+      // ⑥ 鑑定サマリー出力生成
+      let summaryText = `【占星術カルテ：${childName}様】\n`;
+      summaryText += `生年月日：${dateStr} (${timeStr})\n\n`;
+      summaryText += `------------------------------\n`;
+      summaryText += `① 4元素バランス\n`;
+      summaryText += `火:${elementCounts["火"]} 地:${elementCounts["地"]} 風:${elementCounts["風"]} 水:${elementCounts["水"]}\n\n`;
+      summaryText += `② 主要天体配置\n`;
+      mainPlanets.forEach(p => {
+        summaryText += `・${p}：${planets[p].signName}\n`;
+      });
+      summaryText += `・トランスサタニアン：天王星(${planets["天王星"].signName}) / 海王星(${planets["海王星"].signName}) / 冥王星(${planets["冥王星"].signName})\n`;
+      summaryText += `・ドラゴンヘッド：${planets["ドラゴンヘッド"].signName}\n\n`;
+      summaryText += `③ つまづき・葛藤アスペクト解析\n`;
+      if (matchedHardAspectsCount > 0) {
+        aspects.forEach(asp => {
+          if (asp.type === 'hard') {
+            const dbItem = HARD_ASPECT_DB.find(item => (item.pair[0] === asp.p1 && item.pair[1] === asp.p2) || (item.pair[0] === asp.p2 && item.pair[1] === asp.p1));
+            if (dbItem) {
+              summaryText += `【${asp.p1}×${asp.p2} (${asp.aspectName})】\n`;
+              summaryText += `・葛藤: ${dbItem.conflict}\n`;
+              summaryText += `・サイン: ${dbItem.sign}\n`;
+              summaryText += `・親の対策: ${dbItem.action}\n\n`;
+            }
+          }
+        });
+      } else {
+        summaryText += `特筆すべきメジャーハードアスペクトは検出されませんでした。\n\n`;
+      }
+      summaryText += `④ 未来への才能・処方箋（趣味・勉強法・開運アクション）\n`;
+      ["太陽", "水星", "金星", "火星", "木星"].forEach(p => {
+        const sName = planets[p].signName;
+        const tip = PLANET_EXP[p].actionTip ? PLANET_EXP[p].actionTip[sName] : "";
+        summaryText += `・${p}(${sName}): ${tip}\n`;
+      });
+      summaryText += `\n`;
+      summaryText += `⑤ おすすめセルフケア\n`;
+      Object.keys(ELEMENT_EXP).forEach(elem => {
+        if (elementCounts[elem] <= 1 || elementCounts[elem] >= 4) {
+          summaryText += `・${elem}元素サポート: ${ELEMENT_EXP[elem].aroma}\n`;
+        }
+      });
+      summaryText += `------------------------------\n`;
+      summaryText += `※本カルテはお子様の個性を尊重し、ご家庭での安心感を育むための占星術アドバイスです。`;
+
+      document.getElementById('summaryTextarea').value = summaryText;
+
+      // 結果表示
+      document.getElementById('resultArea').classList.remove('hidden');
+      document.getElementById('resultArea').scrollIntoView({ behavior: 'smooth' });
+    });
+
+    // テキストコピー機能
+    function copySummaryText() {
+      const textarea = document.getElementById('summaryTextarea');
+      textarea.select();
+      document.execCommand('copy');
+      
+      // アラートの代わりにメッセージ表示ボックスを使用
+      const btn = event.currentTarget;
+      const originalText = btn.innerHTML;
+      btn.innerHTML = `<i class="fa-solid fa-check"></i> コピーしました！`;
+      btn.classList.add('bg-emerald-600');
+      setTimeout(() => {
+        btn.innerHTML = originalText;
+        btn.classList.remove('bg-emerald-600');
+      }, 2000);
+    }
+  </script>
+</body>
+</html>
