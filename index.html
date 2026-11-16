@@ -53,7 +53,7 @@
         </div>
         <div>
           <label class="block text-xs font-bold text-slate-600 mb-1">生年月日 <span class="text-rose-500">*</span></label>
-          <input type="date" id="birthDate" required value="1976-03-11" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-400 text-sm">
+          <input type="date" id="birthDate" required value="2000-11-11" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-400 text-sm">
         </div>
         <div>
           <label class="block text-xs font-bold text-slate-600 mb-1">出生時間（日本時間 UTC+9）</label>
@@ -71,23 +71,7 @@
     <!-- 結果表示エリア -->
     <div id="resultArea" class="hidden space-y-8">
       
-      <!-- 鑑定者向けヘッダー & 操作ボタン -->
-      <div class="flex flex-col sm:flex-row justify-between items-center gap-4 bg-indigo-900 text-white p-5 rounded-2xl no-print shadow-lg">
-        <div>
-          <h3 class="font-bold text-lg" id="summaryTitle">鑑定結果カルテ</h3>
-          <p class="text-xs text-indigo-200">※占いの相談対応・鑑定書の作成用にご活用いただけます。</p>
-        </div>
-        <div class="flex gap-2">
-          <button onclick="window.print()" class="px-4 py-2 bg-white/10 hover:bg-white/20 rounded-xl text-xs font-bold transition flex items-center gap-1.5 border border-white/20">
-            <i class="fa-solid fa-print"></i> 印刷/PDF保存
-          </button>
-          <button onclick="copySummaryText()" class="px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow">
-            <i class="fa-solid fa-copy"></i> テキストコピー
-          </button>
-        </div>
-      </div>
-
-      <!-- ① エレメント分析 (4つの元素) -->
+            <!-- ① エレメント分析 (4つの元素) -->
       <div class="bg-white rounded-3xl p-6 sm:p-8 card-shadow border border-slate-100">
         <h3 class="text-lg font-bold text-indigo-950 mb-4 flex items-center gap-2 border-b pb-3">
           <span class="w-3 h-3 rounded-full bg-indigo-500 inline-block"></span> ① ４元素（エレメント）バランス分析
@@ -137,20 +121,8 @@
 
         <div class="space-y-6" id="careDetail"></div>
       </div>
-
-      <!-- ⑥ 鑑定サマリー出力 -->
-      <div class="bg-slate-900 text-slate-100 rounded-3xl p-6 sm:p-8 card-shadow">
-        <div class="flex justify-between items-center mb-4 border-b border-slate-700 pb-3">
-          <h3 class="text-lg font-bold text-amber-300 flex items-center gap-2">
-            <i class="fa-solid fa-file-contract"></i> ⑥ 鑑定用メッセージ・送送信サマリー
-          </h3>
-          <button onclick="copySummaryText()" class="px-3 py-1 bg-amber-400 hover:bg-amber-300 text-slate-900 text-xs font-bold rounded-lg transition">
-            コピーする
-          </button>
-        </div>
-        <p class="text-xs text-slate-400 mb-3">保護者の方へのメッセージやメール・LINE等にそのまま活用できる要約文です。</p>
-        <textarea id="summaryTextarea" readonly class="w-full h-64 p-4 rounded-xl bg-slate-950 text-slate-200 text-xs leading-relaxed border border-slate-800 font-mono focus:outline-none resize-none"></textarea>
-      </div>
+        <p class="text-xs text-slate-400 mb-3">お子さんの星を守るあなたにも、優しい星の光が降り注ぎますように。</p>
+             </div>
 
     </div>
   </div>
@@ -577,11 +549,11 @@
       const aspectList = [];
 
       const aspectTypes = [
-        { name: "コンジャンクション (0°)", angle: 0, orb: 8, type: "hard", nature: "エネルギーが強力に合一・強調" },
-        { name: "オポジション (180°)", angle: 180, orb: 8, type: "hard", nature: "張り詰めた緊張・見張り合い" },
-        { name: "スクエア (90°)", angle: 90, orb: 7, type: "hard", nature: "突然の衝突・方向性の葛藤" },
-        { name: "トライン (120°)", angle: 120, orb: 7, type: "soft", nature: "スムーズな循環・天然の才能" },
-        { name: "セクスタイル (60°)", angle: 60, orb: 5, type: "soft", nature: "意識すると活きるサポート関係" }
+        { name: "コンジャンクション (0°)", angle: 0, orb: 3, type: "hard", nature: "エネルギーが強力に合一・強調" },
+        { name: "オポジション (180°)", angle: 180, orb: 3, type: "hard", nature: "張り詰めた緊張・見張り合い" },
+        { name: "スクエア (90°)", angle: 90, orb: 3, type: "hard", nature: "突然の衝突・方向性の葛藤" },
+        { name: "トライン (120°)", angle: 120, orb: 3, type: "soft", nature: "スムーズな循環・天然の才能" },
+        { name: "セクスタイル (60°)", angle: 60, orb: 3, type: "soft", nature: "意識すると活きるサポート関係" }
       ];
 
       for (let i = 0; i < keys.length; i++) {
@@ -918,52 +890,7 @@
       }
       document.getElementById('careDetail').innerHTML = careHtml;
 
-      // ⑥ 鑑定サマリー出力生成
-      let summaryText = `【占星術カルテ：${childName}様】\n`;
-      summaryText += `生年月日：${dateStr} (${timeStr})\n\n`;
-      summaryText += `------------------------------\n`;
-      summaryText += `① 4元素バランス\n`;
-      summaryText += `火:${elementCounts["火"]} 地:${elementCounts["地"]} 風:${elementCounts["風"]} 水:${elementCounts["水"]}\n\n`;
-      summaryText += `② 主要天体配置\n`;
-      mainPlanets.forEach(p => {
-        summaryText += `・${p}：${planets[p].signName}\n`;
-      });
-      summaryText += `・トランスサタニアン：天王星(${planets["天王星"].signName}) / 海王星(${planets["海王星"].signName}) / 冥王星(${planets["冥王星"].signName})\n`;
-      summaryText += `・ドラゴンヘッド：${planets["ドラゴンヘッド"].signName}\n\n`;
-      summaryText += `③ つまづき・葛藤アスペクト解析\n`;
-      if (matchedHardAspectsCount > 0) {
-        aspects.forEach(asp => {
-          if (asp.type === 'hard') {
-            const dbItem = HARD_ASPECT_DB.find(item => (item.pair[0] === asp.p1 && item.pair[1] === asp.p2) || (item.pair[0] === asp.p2 && item.pair[1] === asp.p1));
-            if (dbItem) {
-              summaryText += `【${asp.p1}×${asp.p2} (${asp.aspectName})】\n`;
-              summaryText += `・葛藤: ${dbItem.conflict}\n`;
-              summaryText += `・サイン: ${dbItem.sign}\n`;
-              summaryText += `・親の対策: ${dbItem.action}\n\n`;
-            }
-          }
-        });
-      } else {
-        summaryText += `特筆すべきメジャーハードアスペクトは検出されませんでした。\n\n`;
-      }
-      summaryText += `④ 未来への才能・処方箋（趣味・勉強法・開運アクション）\n`;
-      ["太陽", "水星", "金星", "火星", "木星"].forEach(p => {
-        const sName = planets[p].signName;
-        const tip = PLANET_EXP[p].actionTip ? PLANET_EXP[p].actionTip[sName] : "";
-        summaryText += `・${p}(${sName}): ${tip}\n`;
-      });
-      summaryText += `\n`;
-      summaryText += `⑤ おすすめセルフケア\n`;
-      Object.keys(ELEMENT_EXP).forEach(elem => {
-        if (elementCounts[elem] <= 1 || elementCounts[elem] >= 4) {
-          summaryText += `・${elem}元素サポート: ${ELEMENT_EXP[elem].aroma}\n`;
-        }
-      });
-      summaryText += `------------------------------\n`;
-      summaryText += `※本カルテはお子様の個性を尊重し、ご家庭での安心感を育むための占星術アドバイスです。`;
-
-      document.getElementById('summaryTextarea').value = summaryText;
-
+     
       // 結果表示
       document.getElementById('resultArea').classList.remove('hidden');
       document.getElementById('resultArea').scrollIntoView({ behavior: 'smooth' });
